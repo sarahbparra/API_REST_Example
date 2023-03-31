@@ -30,11 +30,6 @@ public class ProductoServiceImpl implements ProductoService{
         return productoDao.findAll(pageable); 
     }
 
-    @Override
-    public Producto findById(long id) {
-        
-        return productoDao.findById(id); 
-    }
 
     @Override
     public Producto save(Producto producto) {
@@ -47,5 +42,13 @@ public class ProductoServiceImpl implements ProductoService{
        
         productoDao.delete(producto);
     }
+
+    @Override
+    public Producto findById(long id) {
+        
+        return productoDao.findById(id);
+    }
+
+
     
 }
