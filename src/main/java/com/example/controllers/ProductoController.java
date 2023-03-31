@@ -1,5 +1,6 @@
 package com.example.controllers;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,9 +26,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.entities.Producto;
 import com.example.services.ProductoService;
+import com.example.utilities.FileUploadUtil;
 
 import jakarta.validation.Valid;
 
@@ -44,6 +47,9 @@ public class ProductoController {
 
      @Autowired
      private ProductoService productoService; 
+
+     @Autowired 
+     private FileUploadUtil fileUploadUtil; 
 
     /** 
      * El siguiente método va a responder a una petición (request) del tipo: 
@@ -146,14 +152,23 @@ public class ProductoController {
 
       /**
        * Persiste un producto en la base de datos. 
+     * @throws IOException
        * 
        *
        */
 
-       @PostMapping
+    // Guardar (Persistir), un producto, con su presentacion en la base de datos
+    // Para probarlo con POSTMAN: Body -> form-data -> producto -> CONTENT TYPE ->
+    // application/json
+    // no se puede dejar el content type en Auto, porque de lo contrario asume
+    // application/octet-stream
+    // y genera una exception MediaTypeNotSupported
+
+       @PostMapping(consumes = "multipart/form-data")
        @Transactional
       public ResponseEntity<Map<String, Object>> insert(@Valid @RequestBody Producto producto, 
-            BindingResult result){
+            BindingResult result, 
+            @RequestParam(name = "file") MultipartFile file) throws IOException{
 
         Map<String, Object> responseAsMap = new HashMap<>(); 
         ResponseEntity<Map<String, Object>> responseEntity = null; 
@@ -180,6 +195,15 @@ public class ProductoController {
          }
 
          //Si no hay errores, entonces persistimos el producto 
+
+         //Comprobando previamente si nos han enviado una imagen, o un archivo. 
+         //Se comprueba de si multiPartFile viene o no
+
+         if(!file.isEmpty()) {
+
+            String fileCode = fileUploadUtil.saveFile(file.getOriginalFilename(), file); 
+            producto.setImagenProducto(fileCode + "-" + file.getOriginalFilename());
+         }
 
          Producto productoDB = productoService.save(producto); 
 
@@ -309,40 +333,40 @@ public class ProductoController {
 
           }
 
-    @DeleteMapping("/{id}")
-    @Transactional
+    // @DeleteMapping("/{id}")
+    // @Transactional
 
-    public ResponseEntity<String> deleteVictor(@PathVariable(name = "id") Integer id){
+    // public ResponseEntity<String> deleteVictor(@PathVariable(name = "id") Integer id){
 
-        ResponseEntity<String> responseEntity = null; 
+    //     ResponseEntity<String> responseEntity = null; 
 
-        try {
+    //     try {
             
-            //Recuperamos el producto
+    //         //Recuperamos el producto
 
-            Producto producto = productoService.findById(id); 
+    //         Producto producto = productoService.findById(id); 
 
-            if(producto != null){
+    //         if(producto != null){
 
-                productoService.delete(producto); 
-                responseEntity = new ResponseEntity<String>("Borrado exitosamente", HttpStatus.OK); 
+    //             productoService.delete(producto); 
+    //             responseEntity = new ResponseEntity<String>("Borrado exitosamente", HttpStatus.OK); 
 
-            } else {
+    //         } else {
 
-                responseEntity = new ResponseEntity<String>("No se ha encontrado el producto buscado", HttpStatus.NOT_FOUND);
+    //             responseEntity = new ResponseEntity<String>("No se ha encontrado el producto buscado", HttpStatus.NOT_FOUND);
 
-            }
+    //         }
 
-        } catch (DataAccessException e) {
+    //     } catch (DataAccessException e) {
             
-            e.getMostSpecificCause(); 
-            responseEntity = new ResponseEntity<String>("Error Fatal", HttpStatus.INTERNAL_SERVER_ERROR); 
+    //         e.getMostSpecificCause(); 
+    //         responseEntity = new ResponseEntity<String>("Error Fatal", HttpStatus.INTERNAL_SERVER_ERROR); 
 
-        }
+    //     }
 
-        return responseEntity; 
+    //     return responseEntity; 
 
-    }
+    // }
 
 }
 
