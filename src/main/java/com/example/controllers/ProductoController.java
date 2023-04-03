@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -166,9 +167,11 @@ public class ProductoController {
 
        @PostMapping(consumes = "multipart/form-data")
        @Transactional
-      public ResponseEntity<Map<String, Object>> insert(@Valid @RequestBody Producto producto, 
-            BindingResult result, 
-            @RequestParam(name = "file") MultipartFile file) throws IOException{
+      public ResponseEntity<Map<String, Object>> insert(
+        @Valid 
+        @RequestPart(name = "producto") Producto producto, 
+        BindingResult result, 
+        @RequestPart(name = "file") MultipartFile file) throws IOException{
 
         Map<String, Object> responseAsMap = new HashMap<>(); 
         ResponseEntity<Map<String, Object>> responseEntity = null; 
