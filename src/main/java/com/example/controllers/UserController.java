@@ -3,6 +3,7 @@ package com.example.controllers;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.user.User;
@@ -22,6 +23,7 @@ public class UserController {
         return new ResponseEntity<>(userService.findAll(), HttpStatus.FOUND);
     }
     @PostMapping("/add")
+    @Transactional
     public ResponseEntity<User> add(@RequestBody User user){
         return ResponseEntity.ok(userService.add(user));
     }
@@ -32,11 +34,13 @@ public class UserController {
     }
 
     @DeleteMapping("/{email}")
+    @Transactional
     public void delete(@PathVariable("email") String email){
         userService.deleteByEmail(email);
     }
 
     @PutMapping("/update")
+    @Transactional
     public ResponseEntity<User> update(@RequestBody User user){
         return ResponseEntity.ok(userService.update(user));
     }

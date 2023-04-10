@@ -38,9 +38,9 @@ public class SecurityConfig {
         return http.build();
     }
 
-    // public static void main(String[] args) {
+    public static void main(String[] args) {
         
-    //     System.out.println(passwordEncoder().encode("123456"));
+        System.out.println(new SecurityConfig().passwordEncoder().encode("Temp2023$$"));
 
     //En este caso, había que poner en frente de PasswordEncoder static
     // }
@@ -49,4 +49,5 @@ public class SecurityConfig {
 
     //Sin el static, hay que llamar a passwordEncoder a partir de SecurityCOnfig
     //hay que instanciarlo, por eso vive en el plano de las instancias. 
+}
 }
